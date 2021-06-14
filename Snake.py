@@ -46,12 +46,11 @@ class Snake:
 
     def iterate(self):
         if self.body[0].pos + self.body[0].dir == self.food.pos:
-            self.body.append(Segment(self.body[len(self.body)-1].pos,
-                                     self.body[len(self.body)-1],
-                                     self.body[len(self.body)-1].dir))
+            self.body.append(Segment(self.body[len(self.body) - 1].pos,
+                                     self.body[len(self.body) - 1],
+                                     self.body[len(self.body) - 1].dir))
         else:
-            self.body[len(self.body)-1].update()
-
+            self.body[len(self.body) - 1].update()
 
         for i in range(len(self.body) - 2, -1, -1):
             self.body[i].update()
