@@ -46,6 +46,7 @@ class Snake:
 
     def iterate(self):
         if self.body[0].pos + self.body[0].dir == self.food.pos:
+            self.food.eaten()
             self.body.append(Segment(self.body[len(self.body) - 1].pos,
                                      self.body[len(self.body) - 1],
                                      self.body[len(self.body) - 1].dir))
