@@ -33,12 +33,14 @@ path_index = 0
 
 looping = False
 while True:
-    if USER_CONTROLLED:
-        cantBe = get_opposite(snake.get_head_dir())
-        while looping:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    exit()
+    cantBe = get_opposite(snake.get_head_dir())
+    while looping:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                exit()
+            if event.type == pygame.USEREVENT:
+                looping = False
+            if USER_CONTROLLED:
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_UP:
                         if DIR.UP != cantBe:
@@ -52,27 +54,21 @@ while True:
                     elif event.key == pygame.K_RIGHT:
                         if DIR.RIGHT != cantBe:
                             snake.update_head_dir(DIR.RIGHT)
-                if event.type == pygame.USEREVENT:
-                    looping = False
-    else:  # AI starts here
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                exit()
-        if snake.didEat or path_index == len(path):
-            path = get_fastest_path()
-            path_index = 0
 
     pygame.time.set_timer(pygame.USEREVENT, MILLISECONDS_PER_FRAME)
     looping = True
 
-    snake.update_head_dir(path[path_index])
-    path_index += 1
+    if not USER_CONTROLLED:
+        if snake.didEat or path_index == len(path):
+            path = get_fastest_path(snake)
+            path_index = 0
+        snake.update_head_dir(path[path_index])
+        path_index += 1
 
     if not snake.iterate():
         print("Game Over!")
+        pygame.quit()
         exit()
-
-
 
     screen.fill((0, 0, 0))
 
