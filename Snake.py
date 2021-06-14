@@ -26,14 +26,37 @@ class Head(Segment):
 class Food:
     def __init__(self, _pos):
         self.pos = _pos
+        self.board = []
+        for y in range(HEIGHT):
+            for x in range(WIDTH):
+                self.board.append(v2(x, y))
 
-    def eaten(self):
-        self.pos = v2(randrange(WIDTH), randrange(HEIGHT))
+    def new_position(self, body):
+        # get body positions into a sorted list of how far
+        # they are from 0,0 based on up->down then left->right
+        sorted_segments = []
+        for seg in range(len(body)):
+            p_num = body[seg].pos.y*WIDTH + body[seg].pos.x
+            put_in = False
+            for i in range(len(sorted_segments)):
+                if sorted_segments[i].y*WIDTH + sorted_segments[i].x > p_num:
+                    sorted_segments.insert(i, body[seg].pos)
+                    put_in = True
+            if not put_in:
+                sorted_segments.append(body[seg].pos)
+
+        n = randrange(WIDTH * HEIGHT - len(body))
+        for i in range(len(self.board)):
+            if self.board[i] not in sorted_segments:
+                n -= 1
+                if n == 0:
+                    self.pos = self.board[i]
 
 
 class Snake:
     body = []
     food = Food(v2(randrange(WIDTH), randrange(HEIGHT)))
+    didEat = True
 
     def __init__(self, n=0):
         self.body.append(Head())
@@ -46,11 +69,13 @@ class Snake:
 
     def iterate(self):
         if self.body[0].pos + self.body[0].dir == self.food.pos:
-            self.food.eaten()
+            self.didEat = True
+            self.food.new_position(self.body)
             self.body.append(Segment(self.body[len(self.body) - 1].pos,
                                      self.body[len(self.body) - 1],
                                      self.body[len(self.body) - 1].dir))
         else:
+            self.didEat = False
             self.body[len(self.body) - 1].update()
 
         for i in range(len(self.body) - 2, -1, -1):

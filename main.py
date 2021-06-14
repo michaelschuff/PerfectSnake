@@ -4,6 +4,7 @@ import pygame
 
 from Constants import *
 from Snake import Snake
+from SnakeAI import get_fastest_path
 
 
 def get_opposite(direction):
@@ -27,10 +28,13 @@ pygame.init()
 clock = pygame.time.Clock()
 elapsed_time = clock.tick()
 
+path = []
+path_index = 0
+
 looping = False
 while True:
-    cantBe = get_opposite(snake.get_head_dir())
     if USER_CONTROLLED:
+        cantBe = get_opposite(snake.get_head_dir())
         while looping:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -54,12 +58,21 @@ while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 exit()
+        if snake.didEat or path_index == len(path):
+            path = get_fastest_path()
+            path_index = 0
+
     pygame.time.set_timer(pygame.USEREVENT, MILLISECONDS_PER_FRAME)
     looping = True
+
+    snake.update_head_dir(path[path_index])
+    path_index += 1
 
     if not snake.iterate():
         print("Game Over!")
         exit()
+
+
 
     screen.fill((0, 0, 0))
 
